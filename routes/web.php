@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/{any?}', function(){
+Route::get('/{any}', function(){
     return view('layouts/app');
-});
+})->where('any', '.*');
 
 /*
 Route::get('/', 'PagesController@index');
