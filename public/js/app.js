@@ -124,15 +124,50 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       documents: [],
       document: {
         id: '',
-        title: '',
-        date: '',
-        author: ''
+        title: ''
       },
       document_id: '',
       pagination: {},
@@ -143,12 +178,95 @@ __webpack_require__.r(__webpack_exports__);
     this.fetchDocuments();
   },
   methods: {
-    fetchDocuments: function fetchDocuments() {
-      fetch('api/documents').then(function (res) {
+    fetchDocuments: function fetchDocuments(page_url) {
+      var _this = this;
+
+      var vm = this;
+      page_url = page_url || '/api/documents';
+      fetch(page_url).then(function (res) {
         return res.json();
       }).then(function (res) {
-        console.log(res.data);
+        _this.documents = res.data;
+        vm.makePagination(res.meta, res.links); //console.log(res.data)
+      })["catch"](function (err) {
+        return console.log(err);
       });
+    },
+    makePagination: function makePagination(meta, links) {
+      var pagination = {
+        current_page: meta.current_page,
+        last_page: meta.last_page,
+        next_page_url: links.next,
+        prev_page_url: links.prev
+      };
+      this.pagination = pagination;
+    },
+    deleteDocument: function deleteDocument(id) {
+      var _this2 = this;
+
+      if (confirm('Are You Sure?')) {
+        fetch("api/document/".concat(id), {
+          method: 'delete'
+        }).then(function (res) {
+          return res.json();
+        }).then(function (data) {
+          alert('Document Removed');
+
+          _this2.fetchDocuments();
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      }
+    },
+    addDocument: function addDocument() {
+      var _this3 = this;
+
+      if (this.edit === false) {
+        // Add
+        fetch('api/document', {
+          method: 'post',
+          body: JSON.stringify(this.document),
+          headers: {
+            'content-type': 'application/json'
+          }
+        }).then(function (res) {
+          return res.json();
+        }).then(function (data) {
+          _this3.document.title = '';
+          _this3.document.document = '';
+          alert('Document Added');
+
+          _this3.fetchDocuments();
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      } else {
+        // Update
+        fetch('api/document', {
+          method: 'put',
+          body: JSON.stringify(this.document),
+          headers: {
+            'content-type': 'application/json'
+          }
+        }).then(function (res) {
+          return res.json();
+        }).then(function (data) {
+          _this3.document.title = '';
+          _this3.document.document = '';
+          alert('Document Updated');
+
+          _this3.fetchDocuments();
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      }
+    },
+    editDocument: function editDocument(document) {
+      this.edit = true;
+      this.document.id = document.id;
+      this.document.document_id = document.document_id;
+      this.document.title = document.title;
+      this.document.document = document.document;
     }
   }
 });
@@ -679,32 +797,218 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "h1",
-      {
-        staticClass: "font-normal text-3xl text-gray-darkest leading-none mb-4"
-      },
-      [_vm._v("\n        Docs Base\n    ")]
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "rounded-lg shadow p-3" }, [
-      _c("h3", [
-        _c(
-          "a",
-          {
-            staticClass: "text-l leading-tight text-grey-darkest",
-            attrs: { href: "#" }
-          },
-          [_vm._v("doc: " + _vm._s(_vm.title))]
-        )
-      ]),
+  return _c(
+    "div",
+    [
+      _c(
+        "h2",
+        {
+          staticClass:
+            "font-normal text-3xl text-gray-darkest leading-none mb-4"
+        },
+        [_vm._v("\n        Docs Base\n    ")]
+      ),
       _vm._v(" "),
-      _c("small", { staticClass: "text-sm leading-tight text-grey-darker" }, [
-        _vm._v("Created on " + _vm._s(_vm.date) + " by " + _vm._s(_vm.author))
-      ])
-    ])
-  ])
+      _c(
+        "form",
+        {
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              return _vm.addDocument($event)
+            }
+          }
+        },
+        [
+          _c("div", { staticClass: "mb-4" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.document.title,
+                  expression: "document.title"
+                }
+              ],
+              staticClass:
+                "shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none \n            focus:shadow-outline",
+              attrs: { type: "text", placeholder: "Title" },
+              domProps: { value: _vm.document.title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.document, "title", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "mb-4" }, [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.document.document,
+                  expression: "document.document"
+                }
+              ],
+              staticClass:
+                "shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none \n            focus:shadow-outline",
+              attrs: { type: "text", placeholder: "Your Text" },
+              domProps: { value: _vm.document.document },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.document, "document", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "bg-white hover:bg-blue-light text-grey-darkest font-semibold py-2 px-4 border border-grey-light rounded shadow",
+              attrs: { type: "submit" }
+            },
+            [_vm._v("\n        Submit\n        ")]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _vm.pagination
+        ? _c(
+            "ul",
+            { staticClass: "flex justify-center bg-gray-200 list-reset my-8" },
+            [
+              _c(
+                "li",
+                { class: [{ disabled: !_vm.pagination.prev_page_url }] },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "border border-grey-dark text-grey-darker hover:bg-grey-light text-center px-4 py-2 rounded-l",
+                      attrs: { href: "#" },
+                      on: {
+                        click: function($event) {
+                          return _vm.fetchDocuments(
+                            _vm.pagination.prev_page_url
+                          )
+                        }
+                      }
+                    },
+                    [_vm._v("Previous")]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c("li", [
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "border border-grey-dark text-grey-darker py-2 px-4",
+                    attrs: { href: "#" }
+                  },
+                  [
+                    _vm._v(
+                      "\n            Page " +
+                        _vm._s(_vm.pagination.current_page) +
+                        " of " +
+                        _vm._s(_vm.pagination.last_page)
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "li",
+                { class: [{ disabled: !_vm.pagination.next_page_url }] },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "border border-grey-dark text-grey-darker hover:bg-grey-light text-center px-4 py-2 rounded-r",
+                      attrs: { href: "#" },
+                      on: {
+                        click: function($event) {
+                          return _vm.fetchDocuments(
+                            _vm.pagination.next_page_url
+                          )
+                        }
+                      }
+                    },
+                    [_vm._v("Next")]
+                  )
+                ]
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm._l(_vm.documents, function(document) {
+        return _c(
+          "div",
+          {
+            key: document.id,
+            staticClass: "m-5 py-4 px-2 rounded border border-grey-dark"
+          },
+          [
+            _c("h3", [
+              _c(
+                "a",
+                {
+                  staticClass: "text-l leading-tight text-grey-darkest",
+                  attrs: { href: "#" }
+                },
+                [_vm._v("doc: " + _vm._s(document.title))]
+              )
+            ]),
+            _vm._v(" "),
+            _c("hr"),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass:
+                  "bg-white hover:bg-yellow-light text-grey-darkest font-semibold py-2 px-4 border border-grey-light rounded shadow",
+                on: {
+                  click: function($event) {
+                    return _vm.editDocument(document)
+                  }
+                }
+              },
+              [_vm._v("\n        Edit\n        ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass:
+                  "bg-white hover:bg-red-light text-grey-darkest font-semibold py-2 px-4 border border-grey-light rounded shadow",
+                on: {
+                  click: function($event) {
+                    return _vm.deleteDocument(document.id)
+                  }
+                }
+              },
+              [_vm._v("\n        Delete\n        ")]
+            )
+          ]
+        )
+      })
+    ],
+    2
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
