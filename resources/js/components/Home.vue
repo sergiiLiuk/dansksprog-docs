@@ -14,10 +14,30 @@
     export default {
         data(){
             return {
-                    title: 'Mit job',
-                    date: '10-08-2019',
-                    author: 'Sergii Liuk'
+                    documents: [],
+                    document:{
+                    id: '',
+                    title: '',
+                    date: '',
+                    author: ''
+                    },
+                    document_id: '',
+                    pagination: {},
+                    edit: false
             }
+         },
+         created(){
+             this.fetchDocuments();
+         },
+
+         methods:{
+             fetchDocuments(){
+                 fetch('api/documents')
+                 .then(res => res.json())
+                 .then(res => {
+                     console.log(res.data)
+                 });
+             }
          }
-     };
+     }
 </script>

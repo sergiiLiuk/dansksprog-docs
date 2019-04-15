@@ -15,10 +15,10 @@ Route::get('/{any}', function(){
     return view('layouts/app');
 })->where('any', '.*');
 
-/*
+
 Route::get('/', 'PagesController@index');
 Route::resource('documents', 'DocumentsController');
-Route::resource('files', 'FileUploadController');
+/*Route::resource('files', 'FileUploadController');
 Route::get('/about', 'PagesController@about');
 Auth::routes();
 Route::resource('user/dashboard', 'UserDashboardController');

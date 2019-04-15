@@ -127,10 +127,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      title: 'Mit job',
-      date: '10-08-2019',
-      author: 'Sergii Liuk'
+      documents: [],
+      document: {
+        id: '',
+        title: '',
+        date: '',
+        author: ''
+      },
+      document_id: '',
+      pagination: {},
+      edit: false
     };
+  },
+  created: function created() {
+    this.fetchDocuments();
+  },
+  methods: {
+    fetchDocuments: function fetchDocuments() {
+      fetch('api/documents').then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res.data);
+      });
+    }
   }
 });
 
